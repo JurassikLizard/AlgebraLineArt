@@ -17,22 +17,22 @@ pipenv run python AlgebraLineArt.py
 git clone <project url>.git
 ```
 Clone a project and work on it locally
----------------
+___________________________
 ```
 git pull
 ```
 Pull all changes from the Git repo to your local project files
----------------
+___________________________
 ```
 git add .
 ```
 Add all files to be ready to be commited
----------------
+___________________________
 ```
 git commit -m "Commit Message"
 ```
 Package up all added files into a commit
----------------
+___________________________
 ```
 git push
 ```
