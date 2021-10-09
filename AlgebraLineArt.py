@@ -17,6 +17,17 @@ def CreateLine(startPoint, endPoint):
     lineList.append(line)
     return line
 
+def CreateLinesFromString(lineString):
+    lineStrings = str(lineString).split("|")
+    lineStrings = list(filter(None, lineStrings))
+    points = []
+    for line in lineStrings:
+        points.append(str(line).split("_"))
+    for point in points:
+        startPoint = str(point[0]).split(",")
+        endPoint = str(point[1]).split(",")
+        CreateLine(CreatePoint(int(startPoint[0]), int(startPoint[1])), CreatePoint(int(endPoint[0]), int(endPoint[1])))
+        
 class Point:
     def __init__(self, x, y, pointID):
         self.x = x
@@ -33,4 +44,7 @@ class Line:
         print(lineFunctionA)
         print(lineFunctionB)
 
-CreateLine(CreatePoint(0, 0), CreatePoint(1, 1))
+testLineString = "|0,0_1,1|-1,1_4,3|"
+CreateLinesFromString(testLineString)
+
+#CreateLine(CreatePoint(0, 0), CreatePoint(1, 1))
