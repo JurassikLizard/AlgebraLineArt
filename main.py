@@ -1,14 +1,8 @@
-import pyperclip
 import LinesLib
+import TkinterLib
 
-use2Functions = False
-copyBuffer = ""
+TkinterLib.main()
 
-def Copy():
-    global copyBuffer
-    pyperclip.copy(copyBuffer)
-    copyBuffer = ""
-
-testLineString = "|1,0_1,1|-1,1_4,3|"
-LinesLib.CreateLinesFromString(testLineString)
-Copy()
+testLineString = "|1,0_1,1|"
+#LinesLib.CreateLinesFromString(testLineString)
+LinesLib.Copy()
