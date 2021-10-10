@@ -1,12 +1,16 @@
+import pyperclip
+
 pointList = []
 lineList = []
 use2Functions = False
+copyBuffer = ""
+
 
 def ReplaceABCD(a, b, c, d, string):
-    string = string.replace("%a%", a)
-    string = string.replace("%b%", b)
-    string = string.replace("%c%", c)
-    string = string.replace("%d%", d)
+    string = string.replace("%a%", str(a))
+    string = string.replace("%b%", str(b))
+    string = string.replace("%c%", str(c))
+    string = string.replace("%d%", str(d))
     return string
 
 def CreatePoint(x, y):
@@ -29,14 +33,20 @@ def CreateLinesFromString(lineString):
         pointB = str(point[1]).split(",")
         CreateLine(CreatePoint(pointA[0], pointA[1]), CreatePoint(pointB[0], pointB[1]))
         
+
+def Copy():
+    global copyBuffer
+    pyperclip.copy(copyBuffer)
+    copyBuffer = ""
+
 class Point:
     def __init__(self, x, y, pointID):
         self.x = x
         self.y = y
         self.pointID = pointID
     
-    def GetLefter(self, point): return self.x if self.x >= point.x else point.x
-    def GetRighter(self, point): return self.x if self.x < point.x else point.x
+    def GetLefter(self, point): return self if self.x <= point.x else point
+    def GetRighter(self, point): return self if self.x > point.x else point
 
 
 class Line:
@@ -46,15 +56,22 @@ class Line:
         self.lineID = lineID
         global use2Functions
         if use2Functions:
-            lineFunctionA = ReplaceABCD(str(self.startPoint.x), str(self.startPoint.y), str(self.endPoint.x), str(self.endPoint.y), "y-%b%=\\left\\{%a%<%c%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}\\right\\}")
-            lineFunctionB = ReplaceABCD(str(self.startPoint.x), str(self.startPoint.y), str(self.endPoint.x), str(self.endPoint.y), "y-%b%=\\left\\{%c%<%a%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%c%\\le x\\le %a%\\right\\}\\right\\}")
-            print(lineFunctionA)
-            print(lineFunctionB)
+            functionString = ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\left\\{%a%<%c%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}\\right\\}") + "\n"
+            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\left\\{%c%<%a%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%c%\\le x\\le %a%\\right\\}\\right\\}") + "\n"
+            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}") + "\n"
+            print(functionString)
+            try:
+                pyperclip.copy(functionString)
+            except:
+                return
         else:
-            lineFunction = ReplaceABCD(str(self.startPoint.x), str(self.startPoint.y), str(self.endPoint.x), str(self.endPoint.y), "y-%b%=\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}")
-            print(lineFunction)
+            functionString = ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}") + "\n"
+            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}") + "\n"
+            print(functionString)
+            global copyBuffer
+            copyBuffer += functionString
+        
 
-testLineString = "|0,0_1,1|-1,1_4,3|"
+testLineString = "|1,0_1,1|-1,1_4,3|"
 CreateLinesFromString(testLineString)
-
-#CreateLine(CreatePoint(0, 0), CreatePoint(1, 1))
+Copy()
