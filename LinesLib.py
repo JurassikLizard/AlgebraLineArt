@@ -1,10 +1,38 @@
 import pyperclip
+import main
 
 pointList = []
 lineList = []
-use2Functions = False
-copyBuffer = ""
 
+class Point:
+    def __init__(self, x, y, pointID):
+        self.x = x
+        self.y = y
+        self.pointID = pointID
+    
+    def GetLefter(self, point): return self if self.x <= point.x else point
+    def GetRighter(self, point): return self if self.x > point.x else point
+
+class Line:
+    def __init__(self, pointA: Point, pointB: Point, lineID):
+        self.startPoint = pointA.GetLefter(pointB)
+        self.endPoint = pointA.GetRighter(pointB)
+        self.lineID = lineID
+        global use2Functions
+        if main.use2Functions:
+            functionString = ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\left\\{%a%<%c%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}\\right\\}") + "\n"
+            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\left\\{%c%<%a%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%c%\\le x\\le %a%\\right\\}\\right\\}") + "\n"
+            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}") + "\n"
+            print(functionString)
+            try:
+                pyperclip.copy(functionString)
+            except:
+                return
+        else:
+            functionString = ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}") + "\n"
+            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}") + "\n"
+            print(functionString)
+            main.copyBuffer += functionString
 
 def ReplaceABCD(a, b, c, d, string):
     string = string.replace("%a%", str(a))
@@ -32,46 +60,3 @@ def CreateLinesFromString(lineString):
         pointA = str(point[0]).split(",")
         pointB = str(point[1]).split(",")
         CreateLine(CreatePoint(pointA[0], pointA[1]), CreatePoint(pointB[0], pointB[1]))
-        
-
-def Copy():
-    global copyBuffer
-    pyperclip.copy(copyBuffer)
-    copyBuffer = ""
-
-class Point:
-    def __init__(self, x, y, pointID):
-        self.x = x
-        self.y = y
-        self.pointID = pointID
-    
-    def GetLefter(self, point): return self if self.x <= point.x else point
-    def GetRighter(self, point): return self if self.x > point.x else point
-
-
-class Line:
-    def __init__(self, pointA: Point, pointB: Point, lineID):
-        self.startPoint = pointA.GetLefter(pointB)
-        self.endPoint = pointA.GetRighter(pointB)
-        self.lineID = lineID
-        global use2Functions
-        if use2Functions:
-            functionString = ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\left\\{%a%<%c%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}\\right\\}") + "\n"
-            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\left\\{%c%<%a%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%c%\\le x\\le %a%\\right\\}\\right\\}") + "\n"
-            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}") + "\n"
-            print(functionString)
-            try:
-                pyperclip.copy(functionString)
-            except:
-                return
-        else:
-            functionString = ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "y-%b%=\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}") + "\n"
-            functionString += ReplaceABCD(self.startPoint.x, self.startPoint.y, self.endPoint.x, self.endPoint.y, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}") + "\n"
-            print(functionString)
-            global copyBuffer
-            copyBuffer += functionString
-        
-
-testLineString = "|1,0_1,1|-1,1_4,3|"
-CreateLinesFromString(testLineString)
-Copy()
