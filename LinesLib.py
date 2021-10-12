@@ -7,17 +7,17 @@ decimal.getcontext().prec = 8
 pointList = []
 lineList = []
 
-use2Functions = False
+use2Functions = True
 copyBuffer = ""
 
 class Point:
     def __init__(self, x, y, pointID, isLocal: bool):
         if isLocal:
-            self.localPos = Vector2(float(x), float(y))
-            self.pos = LocalSpaceToGlobalSpace(Vector2(float(x), float(y)))
+            self.localPos: Vector2 = Vector2(float(x), float(y))
+            self.pos: Vector2 = LocalSpaceToGlobalSpace(Vector2(float(x), float(y)))
         else:
-            self.localPos = GlobalSpaceToLocalSpace(Vector2(float(x), float(y)))
-            self.pos = Vector2(float(x), float(y))
+            self.localPos: Vector2 = GlobalSpaceToLocalSpace(Vector2(float(x), float(y)))
+            self.pos: Vector2 = Vector2(float(x), float(y))
             
         self.pointID = pointID
     
@@ -26,10 +26,12 @@ class Point:
 
 class Line:
     def __init__(self, pointA: Point, pointB: Point, lineID, canvasItemID):
-        self.startPoint = pointA.GetLefter(pointB)
-        self.endPoint = pointA.GetRighter(pointB)
+        self.startPoint: Point = pointA.GetLefter(pointB)
+        self.endPoint: Point = pointA.GetRighter(pointB)
         self.lineID = lineID
         self.canvasItemID = canvasItemID
+        print("Line Class")
+        print(canvasItemID)
         global use2Functions
         global copyBuffer
         localStartPosX = decimal.Decimal(self.startPoint.localPos.x) / decimal.Decimal(30)
@@ -40,12 +42,12 @@ class Line:
             functionString = "\n" + ReplaceABCD(localStartPosX, localStartPosY, localEndPosX, localEndPosY, "y-%b%=\\left\\{%a%<%c%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}\\right\\}")
             functionString += "\n" + ReplaceABCD(localStartPosX, localStartPosY, localEndPosX, localEndPosY, "y-%b%=\\left\\{%c%<%a%:\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%c%\\le x\\le %a%\\right\\}\\right\\}")
             functionString += "\n" + ReplaceABCD(localStartPosX, localStartPosY, localEndPosX, localEndPosY, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}")
-            print(functionString)
+            #print(functionString)
             copyBuffer += functionString
         else:
             functionString = "\n" + ReplaceABCD(localStartPosX, localStartPosY, localEndPosX, localEndPosY, "y-%b%=\\frac{\\left(%d%-%b%\\right)}{%c%-%a%}\\left(x-%a%\\right)\\left\\{%a%\\le x\\le %c%\\right\\}")
             functionString += "\n" + ReplaceABCD(localStartPosX, localStartPosY, localEndPosX, localEndPosY, "x=\\left\\{%c%=%a%:\\ %a%\\left\\{%b%\\le y\\le %d%\\right\\}\\right\\}")
-            print(functionString)
+            #print(functionString)
             copyBuffer += functionString
 
 def ReplaceABCD(a, b, c, d, string):

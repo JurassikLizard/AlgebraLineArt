@@ -12,11 +12,11 @@ current = None
 currentXY = None
 c: tk.Canvas = None
 
-def GlobalSpaceToLocalSpace(world: Vector2):
+def GlobalSpaceToLocalSpace(world: Vector2) -> Vector2:
     position: Vector2 = world - center
     position.y = -position.y
     return position
-def LocalSpaceToGlobalSpace(local: Vector2): 
+def LocalSpaceToGlobalSpace(local: Vector2) -> Vector2: 
     position: Vector2 = Vector2(local.x, -local.y)
     return position + center
 
@@ -46,15 +46,13 @@ def main():
             if currentHorizontal == middleHorizontal: center = Vector2(center[0], i)
             currentHorizontal += 1
 
+        line: LinesLib.Line
+        c.delete("line")
         for line in LinesLib.lineList:
-            line.startPoint.pos = LocalSpaceToGlobalSpace(line.startPoint.localPos)
-            line.endPoint.pos = LocalSpaceToGlobalSpace(line.endPoint.localPos)
-            coords = c.coords(line.canvasItemID)
-            print(coords)
-            coords[0] = event.x
-            coords[1] = event.y
-
-            c.coords(line.canvasItemID, *coords)            
+            if line.canvasItemID:
+                line.startPoint.pos = LocalSpaceToGlobalSpace(line.startPoint.localPos)
+                line.endPoint.pos = LocalSpaceToGlobalSpace(line.endPoint.localPos)
+                CreateLine(line.startPoint.pos.x, line.startPoint.pos.y, line.endPoint.pos.x, line.endPoint.pos.y)
     
     root = tk.Tk()
 
@@ -88,7 +86,7 @@ def mousedown(event):
         x0 = event.x
         y0 = event.y
         currentXY = (x0, y0)
-        current = c.create_line(x0, y0, event.x, event.y)
+        current = CreateLine(x0, y0, event.x, event.y)
 
     else:
         # the new line starts at the end of the previously
@@ -97,7 +95,8 @@ def mousedown(event):
         x0 = coords[2]
         y0 = coords[3]
 
-        current = c.create_line(x0, y0, event.x, event.y)
+        current = CreateLine(x0, y0, event.x, event.y)
+        print("<MouseDown>")
         print(c.coords(current))
         LinesLib.CreateLine(LinesLib.CreatePoint(currentXY[0], currentXY[1], False), LinesLib.CreatePoint(event.x, event.y, False), current)
 
@@ -113,3 +112,6 @@ def motion(event):
         coords[3] = event.y
 
         c.coords(current, *coords)
+
+def CreateLine(x1, y1, x2, y2):
+    return c.create_line(x1, y1, x2, y2, tag="line")
